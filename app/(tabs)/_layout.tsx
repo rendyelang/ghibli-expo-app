@@ -13,15 +13,20 @@ export default function RootLayout() {
           marginBottom: 5,
         }
        }}
+       
     >
       <Tabs.Screen
         name="home"
         options={{ 
           tabBarLabel: "Movies",
-          tabBarIcon: ({color, size}) => {
+          tabBarIcon: ({focused}) => {
             return (
-              <FontAwesome name="film" size={24} color={color} />
+              <FontAwesome name="film" size={24} color="black" style={{ opacity: focused ? 1 : 0.4 }} />
             )
+          },
+          tabBarLabelStyle: {
+            color: "black",
+            opacity: 1
           }
         }}
       />
@@ -29,10 +34,14 @@ export default function RootLayout() {
         name="songs"
         options={{ 
           tabBarLabel: "Songs",
-          tabBarIcon: ({color, size}) => {
+          tabBarIcon: ({focused}) => {
             return (
-              <Entypo name="beamed-note" size={24} color={color} />
+              <Entypo name="beamed-note" size={24} color="black" style={{ opacity: focused ? 1 : 0.4 }} />
             )
+          },
+          tabBarLabelStyle: {
+            color: "black",
+            opacity: 1
           }
         }}
       />

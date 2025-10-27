@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Button, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 // Asumsi Anda menggunakan expo-router atau react-navigation untuk navigasi
 import { getSongById, Song } from '@/src/api/data';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -23,6 +23,20 @@ export default function SongDetailScreen() {
     const [loading, setLoading] = useState(!initialSong);
     const [error, setError] = useState<string | null>(null);
     const [playing, setPlaying] = useState(false)
+    const videoId = song?.eId?.includes("/yt/")
+    ? song.eId.split("/yt/")[1]
+    : song?.eId;
+
+    const onStateChange = useCallback((state) => {
+        if (state === "ended") {
+            setPlaying(false);
+            Alert.alert("Video selesai diputar");
+        } else if (state === "paused") {
+            setPlaying(false);
+        } else if (state === "playing") {
+            setPlaying(true);
+        }
+    }, []);
 
     const togglePlaying = useCallback(() => {
     setPlaying((prev) => !prev);
@@ -43,9 +57,6 @@ export default function SongDetailScreen() {
             setError(e.message || 'Failed to load detail');
           } finally {
             setLoading(false);
-            console.log(id)
-            console.log(song?.score)
-            console.log(song?.trackUrl)
           }
         })();
       }, [id]);
@@ -93,31 +104,29 @@ export default function SongDetailScreen() {
                 </View>
             </View>
 
-            {/* 3. Video Player (Simulasi)
+            {/* YouTube Video Player */}
             <View style={styles.videoPlayerContainer}>
-                Image sebagai simulasi Video Player
-                <Image source={{ uri: song.trackUrl }} style={styles.videoPlaceholder} />
-                
-                Simulasi Overlay Iklan
-                <View style={styles.videoOverlay}>
-                    <View style={styles.adTextContainer}>
-                        <Text style={styles.adText}>Sponsored • 0:01</Text>
-                        <Text style={styles.adText}>Visit advertiser</Text>
-                    </View>
-                </View>
-                
-                Tombol Pause
-                <TouchableOpacity style={styles.pauseButton}>
-                    <Text style={styles.pauseButtonText}>Pause</Text>
-                </TouchableOpacity>
-            </View> */}
-            <View>
+                {videoId ? (
                 <YoutubePlayer
-                    height={300}
+                    key={videoId}
+                    height={200}
                     play={playing}
-                    videoId={"iee2TATGMyI"}
-                />
-                <Button title={playing ? "pause" : "play"} onPress={togglePlaying} />
+                    videoId={videoId}
+                    onChangeState={onStateChange}
+                    />
+                ) : (
+                    <Text style={styles.error}>Video ID tidak valid</Text>
+                )}
+
+                {/* Tombol Pause/Play */}
+                <TouchableOpacity
+                    style={styles.pauseButton}
+                    onPress={togglePlaying}
+                >
+                    <Text style={styles.pauseButtonText}>
+                    {playing ? "Pause" : "Play"}
+                    </Text>
+                </TouchableOpacity>
             </View>
 
             {/* 4. Song Information */}
@@ -235,8 +244,6 @@ const styles = StyleSheet.create({
         // Tambahan styling untuk ikon info kecil jika diperlukan
     },
     pauseButton: {
-        position: 'absolute',
-        bottom: 0,
         width: '100%',
         backgroundColor: '#1f2937', // Warna gelap
         paddingVertical: 15,

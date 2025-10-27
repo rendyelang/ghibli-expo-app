@@ -33,7 +33,6 @@ export default function SongCard({ song, onPress }: Props) {
 
       {/* 2. Info Text */}
       <View style={styles.info}>
-        <Text>{song._id}</Text>
         <Text numberOfLines={2} style={styles.title}>
           {song.name}
         </Text>
