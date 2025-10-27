@@ -7,7 +7,8 @@ export default function RootLayout() {
                 headerShown: false,
             }}
         >
+            <Stack.Screen name="(auth)/splash" />
             <Stack.Screen name="(tabs)" />
         </Stack>
-    )
+    );
 }
